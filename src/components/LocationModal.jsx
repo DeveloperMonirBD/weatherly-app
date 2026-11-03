@@ -5,11 +5,21 @@ export default function LocationModal({ onClose, onSubmit }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
+    const [city, setCity] = useState('')
+
     const handleSubmit = e => {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const city = formData.get('city');
-        if (onSubmit && city) onSubmit({ city });
+
+        // //* Get the city value from the form
+        // const formData = new FormData(e.target);
+        // const city = formData.get('city');
+        // if (onSubmit && city) onSubmit({ city });
+
+        //! OnChange handler for city input
+        const city = city.trim();
+        if (!city) { 
+            setError('Please enter a city name.')
+        }
 
         console.log(city)
     };
@@ -123,6 +133,8 @@ export default function LocationModal({ onClose, onSubmit }) {
                             id="city"
                             name="city"
                             type="text"
+                            value={city}
+                            onChange={ (e) => setCity(e.target.value)}
                             placeholder="e.g. Dhaka, Chittagong"
                             required
                             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 transition duration-200"
