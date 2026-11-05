@@ -1,13 +1,14 @@
 import { Loader2, MapPin, Navigation, X } from 'lucide-react';
 import { useState } from 'react';
+import { getGeoLocation } from '../services/get-geolocation';
 
 export default function LocationModal({ onClose, onSubmit }) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const [city, setCity] = useState('')
+    const [city, setCity] = useState('');
 
-    const handleSubmit = e => {
+    const handleSubmit = async e => {
         e.preventDefault();
 
         // //* Get the city value from the form
@@ -16,12 +17,14 @@ export default function LocationModal({ onClose, onSubmit }) {
         // if (onSubmit && city) onSubmit({ city });
 
         //! OnChange handler for city input
-        const city = city.trim();
-        if (!city) { 
-            setError('Please enter a city name.')
-        }
+        const value = city.trim();
 
-        console.log(city)
+        try {
+            const result = await getGeoLocation(value);
+            console.log(result);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     // Automatic Location Detection
@@ -53,7 +56,7 @@ export default function LocationModal({ onClose, onSubmit }) {
                     if (onSubmit) {
                         onSubmit({ city: cityName, lat: latitude, lng: longitude });
                     }
-                // eslint-disable-next-line no-unused-vars
+                    // eslint-disable-next-line no-unused-vars
                 } catch (err) {
                     setError('Failed to fetch city name. Lat/Lng saved.');
                     if (onSubmit) onSubmit({ lat: latitude, lng: longitude });
@@ -134,7 +137,7 @@ export default function LocationModal({ onClose, onSubmit }) {
                             name="city"
                             type="text"
                             value={city}
-                            onChange={ (e) => setCity(e.target.value)}
+                            onChange={e => setCity(e.target.value)}
                             placeholder="e.g. Dhaka, Chittagong"
                             required
                             className="w-full rounded-xl border border-gray-200 px-4 py-3 text-gray-800 placeholder-gray-400 focus:border-red-500 focus:outline-none focus:ring-4 focus:ring-red-500/10 transition duration-200"
