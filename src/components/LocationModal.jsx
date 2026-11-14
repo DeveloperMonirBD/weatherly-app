@@ -1,12 +1,18 @@
 import { Loader2, MapPin, Navigation, X } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { getGeoLocation } from '../services/get-geolocation';
 
 export default function LocationModal({ onClose, onSubmit }) {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const [city, setCity] = useState('');
+
+    const goToPage = Location => {
+        navigate('/weather', { state: { Location } });
+    };
 
     const handleSubmit = async e => {
         e.preventDefault();
@@ -20,8 +26,12 @@ export default function LocationModal({ onClose, onSubmit }) {
         const value = city.trim();
 
         try {
-            const result = await getGeoLocation(value);
-            console.log(result);
+            const location = await getGeoLocation(value);
+            // console.log(result);
+            if (!location) {
+                setError('Geocoding request failed!');
+            }
+            goToPage(location);
         } catch (error) {
             console.log(error);
         }
